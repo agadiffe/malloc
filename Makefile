@@ -6,7 +6,7 @@
 #    By: agadiffe <agadiffe@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/05/14 20:31:10 by agadiffe          #+#    #+#              #
-#    Updated: 2017/11/02 17:56:33 by agadiffe         ###   ########.fr        #
+#    Updated: 2017/11/02 18:00:55 by agadiffe         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -56,7 +56,7 @@ $(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC_FILE)
 all: $(NAME)
 
 test:
-	$(CC) $(CFLAGS) main.c -L. -$(NAME:.so) $(LIBFT) -lft
+	$(CC) $(CFLAGS) main.c -L. -$(NAME:.so=) $(LIBFT) -lft
 
 $(NAME): $(LIBFT_PATH)$(LIBFT_NAME) $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) -shared $(OBJ) $(LIBFT) -lft
