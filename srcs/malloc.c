@@ -64,25 +64,13 @@ t_header	*create_chunk(size_t size, t_header **data, t_header *last)
 		return (handle_mmap(size, data));
 }
 
-t_header	*handle_small(size_t size)
-{
-	(void)size;
-	return (NULL);
-}
-
-t_header	*handle_large(size_t size)
-{
-	(void)size;
-	return (NULL);
-}
-
-t_header	*handle_tiny(size_t size)
+t_header	*handle_malloc(size_t size, size_t zone, t_header **data)
 {
 	t_header	*ptr;
 	t_header	*last;
 
-	if (!(ptr = find_chunk(&g_data.tiny, &last, size + HEADER_SIZE)))
-		ptr = create_chunk(TINY, &g_data.tiny, last);
+	if (!(ptr = find_chunk(data, &last, size + HEADER_SIZE)))
+		ptr = create_chunk(zone, data, last);
 	if (!ptr)
 		return (NULL);
 	if (last)
@@ -91,7 +79,7 @@ t_header	*handle_tiny(size_t size)
 		ptr->prev = last;
 	}
 	else
-		g_data.tiny = ptr;
+		*data = ptr;
 	if (ptr->size - size >= HEADER_SIZE + 4)
 		split_chunk(&ptr, size);
 	return (ptr->mem);
@@ -107,11 +95,11 @@ void	*malloc(size_t size)
 	if (size <= 0)
 		return (NULL);
 	else if (align_size <= TINY - HEADER_SIZE)
-		ptr = handle_tiny(align_size);
+		ptr = handle_malloc(align_size, TINY, &g_data.tiny);
 	else if (align_size <= SMALL - HEADER_SIZE)
-		ptr = handle_small(align_size);
+		ptr = handle_malloc(align_size, SMALL, &g_data.small);
 	else 
-		ptr = handle_large(align_size);
+		ptr = handle_malloc(align_size, align_size, &g_data.large);
 	pthread_mutex_unlock(&g_mutex);
 	return (ptr == MAP_FAILED ? NULL : ptr);
 }
