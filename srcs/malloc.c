@@ -16,8 +16,18 @@ t_header	*find_chunk(t_header **lst, t_header **last, size_t size)
 
 void		split_chunk(t_header **block, size_t size)
 {
-	(void)block;
-	(void)size;
+	t_header	*tmp;
+	t_header	*new;
+
+	tmp = *block;
+	new = tmp->mem + size;
+	new->mem = new + HEADER_SIZE;
+	new->size = tmp->size - size - HEADER_SIZE;
+	new->is_free = 1;
+	new->prev = tmp;
+	new->next = NULL;
+	tmp->size = size;
+	tmp->next = new;
 }
 
 void		fill_chunk(t_header **block, size_t size)
