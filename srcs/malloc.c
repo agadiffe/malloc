@@ -1,6 +1,62 @@
 #include "malloc.h"
 
-t_header	*find_chunk(t_header **lst, t_header **last, size_t size)
+t_header	*find_chunk(void *ptr)
+{
+	t_header	**data[4];
+	t_header	*tmp;
+	int			i;
+
+	i = 0;
+	data[0] = &g_data.tiny;
+	data[1] = &g_data.small;
+	data[2] = &g_data.large;
+	data[3] = NULL;
+	while (data[i])
+	{
+		tmp = *data[i];
+		while (tmp)
+		{
+			if (tmp->mem == ptr)
+				return (tmp);
+			tmp = tmp->next;
+		}
+		i++;
+	}
+	return (NULL);
+}
+
+void		join_chunk(t_header **block)
+{
+	t_header	*tmp;
+
+	tmp = *block;
+	if (tmp->next && tmp->next->is_free)
+	{
+		tmp->size += HEADER_SIZE + tmp->next->size;
+		tmp->next = tmp->next->next;
+		if (tmp->next)
+			tmp->next->prev = tmp;
+	}
+}
+
+void		free(void *ptr)
+{
+	t_header	*tmp;
+
+	if ((tmp = find_chunk(ptr)))
+	{
+		tmp->is_free = 1;
+		if (tmp->prev && tmp->prev->is_free)
+			join_chunk(&tmp);
+		if (tmp->next)
+			join_chunk(&tmp);
+	}
+	//todo:
+	//check if size left > TINY or SMALL and call munmap;
+	//if large, always munmap ?!
+}
+
+t_header	*find_free_chunk(t_header **lst, t_header **last, size_t size)
 {
 	t_header	*tmp;
 
@@ -69,7 +125,7 @@ t_header	*handle_malloc(size_t size, size_t zone, t_header **data)
 	t_header	*ptr;
 	t_header	*last;
 
-	if (!(ptr = find_chunk(data, &last, size + HEADER_SIZE)))
+	if (!(ptr = find_free_chunk(data, &last, size + HEADER_SIZE)))
 		ptr = create_chunk(zone, data, last);
 	if (!ptr)
 		return (NULL);
