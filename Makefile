@@ -22,7 +22,7 @@ NAME = libft_malloc_$(HOSTTYPE).so
 $(shell ln -s $(NAME) libft_malloc.so 2> /dev/null)
 
 CC = clang
-CFLAGS += -Wall -Werror -Wextra
+CFLAGS += -Wall -Werror -Wextra -fPIC
 
 SRC_PATH = ./srcs/
 SRC_NAME = malloc.c						\
@@ -72,6 +72,7 @@ clean:
 fclean: clean
 	@$(MAKE) -C $(LIBFT_PATH) fclean
 	@rm -rf $(NAME)
+	@rm -rf libft_malloc.so
 
 re: fclean all
 
