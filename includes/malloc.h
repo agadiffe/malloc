@@ -3,6 +3,8 @@
 
 # define TINY			(size_t)getpagesize() * 2
 # define SMALL			(size_t)getpagesize() * 16
+# define TINY_ZONE		(size_t)TINY * 102
+# define SMALL_ZONE		(size_t)SMALL * 102
 
 # define HEADER_SIZE	(size_t)(sizeof(t_header))
 
@@ -11,7 +13,8 @@
 # define PROT		PROT_READ | PROT_WRITE
 # define MAP		MAP_ANON | MAP_PRIVATE
 
-# define MMAP(x)	mmap(0, x, PROT, MAP, -1, 0)
+# define MMAP(x)		mmap(0, x, PROT, MAP, -1, 0)
+# define MUNMAP(x, y)	munmap(x, y)
 
 # include <unistd.h>
 # include <sys/mman.h>
