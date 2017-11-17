@@ -37,13 +37,22 @@ void		join_chunk(t_header **block)
 		tmp->next->prev = tmp;
 }
 
-/*
-** very simple algo to munmap tiny and small list
-** should check all list
-** if total free size > TINY_ZONE or SMALL_ZONE
-** then munmap the second zone (slow free ...)
-*/
-void		handle_munmap(t_header *block, int zone)
+void		handle_munmap(t_header *block, t_header **data)
+{
+	if (block->prev)
+	{
+		block->prev->next = block->next;
+		block->next->prev = block->prev;
+	}
+	else
+	{
+		*data = block->next;
+		block->next->prev = NULL;
+	}
+	MUNMAP(block->ptr - HEADER_SIZE, block->size + HEADER_SIZE);
+}
+
+void		handle_free(t_header *block, int zone)
 {
 	if (zone == 2)
 	{
@@ -51,21 +60,9 @@ void		handle_munmap(t_header *block, int zone)
 		g_data.large = NULL;
 	}
 	else if (zone == 1 && block->size >= 2 * SMALL_ZONE)
-	{
-		if (block->prev)
-			block->prev->next = block->next;
-		else
-			g_data.small = block->next;
-		MUNMAP(block->ptr - HEADER_SIZE, block->size + HEADER_SIZE);
-	}
+		handle_munmap(block, &data.small);
 	else if (block->size >= 2 * TINY_ZONE)
-	{
-		if (block->prev)
-			block->prev->next = block->next;
-		else
-			g_data.tiny = block->next;
-		MUNMAP(block->ptr - HEADER_SIZE, block->size + HEADER_SIZE);
-	}
+		handle_munmap(block, &data.tiny);
 }
 
 void		free(void *ptr)
@@ -84,7 +81,7 @@ void		free(void *ptr)
 		if (tmp->next && tmp->next->is_free)
 			join_chunk(&tmp);
 		if (zone)
-			handle_munmap(tmp, zone);
+			handle_free(tmp, zone);
 	}
 }
 
