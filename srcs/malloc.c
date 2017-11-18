@@ -59,9 +59,9 @@ void		handle_free(t_header *block, int zone)
 		MUNMAP(block->ptr - HEADER_SIZE, block->size + HEADER_SIZE);
 		g_data.large = NULL;
 	}
-	else if (zone == 1 && block->size >= 2 * SMALL_ZONE)
+	else if (zone == 1 && block->size > SMALL_ZONE)
 		handle_munmap(block, &data.small);
-	else if (block->size >= 2 * TINY_ZONE)
+	else if (block->size > TINY_ZONE)
 		handle_munmap(block, &data.tiny);
 }
 
@@ -90,7 +90,6 @@ t_header	*find_free_chunk(t_header **lst, t_header **last, size_t size)
 	t_header	*tmp;
 
 	tmp = *lst;
-	last = NULL;
 	while (tmp && !(tmp->is_free && tmp->size >= size))
 	{
 		*last = tmp;
@@ -110,30 +109,23 @@ void		split_chunk(t_header **block, size_t size)
 	new->size = tmp->size - size - HEADER_SIZE;
 	new->is_free = 1;
 	new->prev = tmp;
-	new->next = NULL;
+	new->next = tmp->next ? tmp->next : NULL;
 	tmp->size = size;
 	tmp->next = new;
 }
 
-void		fill_chunk(t_header **block, size_t size)
+t_header	*handle_mmap(size_t size, t_header **ptr)
 {
 	t_header	*tmp;
 
-	tmp = *block;
-	tmp->mem = tmp + HEADER_SIZE;
-	tmp->is_free = 0;
-	tmp->size = size - HEADER_SIZE;
-	tmp->prev = NULL;
-	tmp->next = NULL;
-}
-
-t_header	*handle_mmap(size_t size, t_header **ptr)
-{
 	if ((*ptr = (t_header *)MMAP(size)) == MAP_FAILED)
 		return (NULL);
 	else
 	{
-		fill_chunk(ptr, size);
+		tmp = *ptr;
+		tmp->mem = tmp + HEADER_SIZE;
+		tmp->is_free = 0;
+		tmp->size = size - HEADER_SIZE;
 		return (*ptr);
 	}
 }
@@ -154,17 +146,23 @@ t_header	*handle_malloc(size_t size, size_t zone, t_header **data)
 	t_header	*ptr;
 	t_header	*last;
 
+	last = NULL;
 	if (!(ptr = find_free_chunk(data, &last, size + HEADER_SIZE)))
 		ptr = create_chunk(zone, data, last);
 	if (!ptr)
 		return (NULL);
-	if (last)
+	if (!*data)
+	{
+		*data = ptr;
+		ptr->prev = NULL;
+		ptr->next = NULL;
+	}
+	else if (!last->next)
 	{
 		last->next = ptr;
+		ptr->next = NULL;
 		ptr->prev = last;
 	}
-	else
-		*data = ptr;
 	if (ptr->size - size >= HEADER_SIZE + 4)
 		split_chunk(&ptr, size);
 	return (ptr->mem);
