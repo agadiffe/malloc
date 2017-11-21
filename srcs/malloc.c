@@ -1,4 +1,5 @@
 #include "malloc.h"
+#include "libft.h"
 
 t_header	*find_chunk(void *ptr, int *zone)
 {
@@ -13,7 +14,8 @@ t_header	*find_chunk(void *ptr, int *zone)
 	data[3] = NULL;
 	while (data[i])
 	{
-		*zone = i;
+		if (zone)
+			*zone = i;
 		tmp = *data[i];
 		while (tmp)
 		{
@@ -26,15 +28,12 @@ t_header	*find_chunk(void *ptr, int *zone)
 	return (NULL);
 }
 
-void		join_chunk(t_header **block)
+void		join_next_chunk(t_header *block)
 {
-	t_header	*tmp;
-
-	tmp = *block;
-	tmp->size += HEADER_SIZE + tmp->next->size;
-	tmp->next = tmp->next->next;
-	if (tmp->next)
-		tmp->next->prev = tmp;
+	block->size += HEADER_SIZE + block->next->size;
+	block->next = block->next->next;
+	if (block->next)
+		block->next->prev = block;
 }
 
 void		handle_munmap(t_header *block, t_header **data)
@@ -49,14 +48,14 @@ void		handle_munmap(t_header *block, t_header **data)
 		*data = block->next;
 		block->next->prev = NULL;
 	}
-	MUNMAP(block->ptr - HEADER_SIZE, block->size + HEADER_SIZE);
+	MUNMAP(block->mem - HEADER_SIZE, block->size + HEADER_SIZE);
 }
 
 void		handle_free(t_header *block, int zone)
 {
 	if (zone == 2)
 	{
-		MUNMAP(block->ptr - HEADER_SIZE, block->size + HEADER_SIZE);
+		MUNMAP(block->mem - HEADER_SIZE, block->size + HEADER_SIZE);
 		g_data.large = NULL;
 	}
 	else if (zone == 1 && block->size > SMALL_ZONE)
@@ -72,17 +71,22 @@ void		free(void *ptr)
 
 	if (!ptr)
 		return ;
+	pthread_mutex_lock(&g_mutex);
 	zone = 0;
 	if ((tmp = find_chunk(ptr, &zone)))
 	{
 		tmp->is_free = 1;
 		if (tmp->prev && tmp->prev->is_free)
-			join_chunk(&tmp->prev);
+		{
+			join_next_chunk(tmp->prev);
+			tmp = tmp->prev;
+		}
 		if (tmp->next && tmp->next->is_free)
-			join_chunk(&tmp);
+			join_next_chunk(tmp);
 		if (zone)
 			handle_free(tmp, zone);
 	}
+	pthread_mutex_unlock(&g_mutex);
 }
 
 t_header	*find_free_chunk(t_header **lst, t_header **last, size_t size)
@@ -175,7 +179,7 @@ void	*malloc(size_t size)
 
 	pthread_mutex_lock(&g_mutex);
 	align_size = ALIGN4(size);
-	if (size <= 0)
+	if (!size)
 		return (NULL);
 	else if (align_size <= TINY)
 		ptr = handle_malloc(align_size, TINY_ZONE, &g_data.tiny);
@@ -185,4 +189,55 @@ void	*malloc(size_t size)
 		ptr = handle_malloc(align_size, align_size, &g_data.large);
 	pthread_mutex_unlock(&g_mutex);
 	return (ptr == MAP_FAILED ? NULL : ptr);
+}
+
+void	*handle_realloc(void **ptr, size_t size)
+{
+	void		*newptr;
+	t_header	*tmp;
+
+	if (!(tmp = find_chunk(ptr, NULL)))
+		return (NULL);
+	if (tmp->size >= size)
+	{
+		if (tmp->size - size >= HEADER_SIZE + 4)
+			split_chunk(&tmp, size);
+	}
+	else if (tmp->next && tmp->next->is_free
+				&& tmp->size + HEADER_SIZE + tmp->next->size >= size)
+	{
+		join_next_chunk(tmp);
+		if (tmp->size - size >= HEADER_SIZE + 4)
+			split_chunk(&tmp, size);
+	}
+	else
+	{
+		if (!(newptr = malloc(size)))
+			return (NULL);
+		ft_memcpy(newptr, tmp->mem, tmp->size);
+		return (newptr);
+	}
+	return (*ptr);
+}
+
+void	*realloc(void *ptr, size_t size)
+{
+	void	*ret;
+
+	ret = NULL;
+	if (!ptr)
+		return (malloc(size));
+	if (!size && ptr)
+	{
+		if (!(ret = malloc(1)))
+			return (NULL);
+		free(ptr);
+	}
+	else
+	{
+		if (!(ret = handle_realloc(&ptr, ALIGN4(size))))
+			return (NULL);
+		free(ptr);
+	}
+	return (ret);
 }
