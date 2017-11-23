@@ -89,16 +89,13 @@ void		free(void *ptr)
 	pthread_mutex_unlock(&g_mutex);
 }
 
-t_header	*find_free_chunk(t_header **lst, t_header **last, size_t size)
+t_header	*find_free_chunk(t_header **lst, size_t size)
 {
 	t_header	*tmp;
 
 	tmp = *lst;
 	while (tmp && !(tmp->is_free && tmp->size >= size))
-	{
-		*last = tmp;
 		tmp = tmp->next;
-	}
 	return (tmp);
 }
 
@@ -118,41 +115,54 @@ void		split_chunk(t_header **block, size_t size)
 	tmp->next = new;
 }
 
-t_header	*handle_mmap(size_t size, t_header **ptr)
+t_header	*create_chunk(size_t size, t_header **data)
 {
 	t_header	*tmp;
 
-	if ((*ptr = (t_header *)MMAP(size)) == MAP_FAILED)
+	if ((tmp = (t_header *)MMAP(size)) == MAP_FAILED)
 		return (NULL);
 	else
 	{
-		tmp = *ptr;
 		tmp->mem = tmp + HEADER_SIZE;
 		tmp->is_free = 0;
 		tmp->size = size - HEADER_SIZE;
-		return (*ptr);
+		return (tmp);
 	}
 }
 
-t_header	*create_chunk(size_t size, t_header **data, t_header *last)
+void		insert_chunk_ascending(t_header **data, t_header *ptr)
 {
 	t_header	*tmp;
+	t_header	*save;
 
 	tmp = *data;
+	save = NULL;
+	while (tmp && ptr > tmp)
+	{
+		save = tmp;
+		tmp = tmp->next;
+	}
 	if (tmp)
-		return (handle_mmap(size, &last->next));
+	{
+		ptr->next = tmp;
+		tmp->prev->next = ptr;
+		ptr->prev = tmp->prev;
+		tmp->prev = ptr;
+	}
 	else
-		return (handle_mmap(size, data));
+	{
+		ptr->prev = save;
+		save->next = ptr;
+		ptr->next = NULL;
+	}
 }
 
 t_header	*handle_malloc(size_t size, size_t zone, t_header **data)
 {
 	t_header	*ptr;
-	t_header	*last;
 
-	last = NULL;
-	if (!(ptr = find_free_chunk(data, &last, size + HEADER_SIZE)))
-		ptr = create_chunk(zone, data, last);
+	if (!(ptr = find_free_chunk(data, size + HEADER_SIZE)))
+		ptr = create_chunk(zone, data);
 	if (!ptr)
 		return (NULL);
 	if (!*data)
@@ -161,12 +171,8 @@ t_header	*handle_malloc(size_t size, size_t zone, t_header **data)
 		ptr->prev = NULL;
 		ptr->next = NULL;
 	}
-	else if (!last->next)
-	{
-		last->next = ptr;
-		ptr->next = NULL;
-		ptr->prev = last;
-	}
+	else
+		insert_chunk_ascending(data, ptr);
 	if (ptr->size - size >= HEADER_SIZE + 4)
 		split_chunk(&ptr, size);
 	return (ptr->mem);
