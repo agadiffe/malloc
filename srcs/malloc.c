@@ -162,17 +162,21 @@ t_header	*handle_malloc(size_t size, size_t zone, t_header **data)
 	t_header	*ptr;
 
 	if (!(ptr = find_free_chunk(data, size + HEADER_SIZE)))
-		ptr = create_chunk(zone, data);
-	if (!ptr)
-		return (NULL);
-	if (!*data)
 	{
-		*data = ptr;
-		ptr->prev = NULL;
-		ptr->next = NULL;
+		if ((ptr = create_chunk(zone, data)))
+		{
+			if (!*data)
+			{
+				*data = ptr;
+				ptr->prev = NULL;
+				ptr->next = NULL;
+			}
+			else
+				insert_chunk_ascending(data, ptr);
+		}
+		else
+			return (NULL);
 	}
-	else
-		insert_chunk_ascending(data, ptr);
 	if (ptr->size - size >= HEADER_SIZE + 4)
 		split_chunk(&ptr, size);
 	return (ptr->mem);
