@@ -16,6 +16,8 @@
 # define MMAP(x)		mmap(0, x, PROT, MAP, -1, 0)
 # define MUNMAP(x, y)	munmap(x, y)
 
+# define BASE16		0123456789ABCDEF
+
 # include <unistd.h>
 # include <sys/mman.h>
 # include <pthread.h>
