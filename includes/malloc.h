@@ -21,6 +21,7 @@
 # include <unistd.h>
 # include <sys/mman.h>
 # include <pthread.h>
+# include <stdint.h>
 
 typedef struct		s_header
 {
@@ -40,5 +41,15 @@ typedef struct		s_data
 
 t_data				g_data;
 pthread_mutex_t		g_mutex;
+
+/*
+**	libft_malloc.c
+*/
+void				ft_putstr(char const *s);
+void				ft_putendl(char const *s);
+void				ft_putnbr_base(uintmax_t n, char *base);
+void				ft_putnbr(int n);
+void				*ft_memcpy(void *dst, const void *src, size_t n);
+void				ft_bzero(void *s, size_t n);
 
 #endif

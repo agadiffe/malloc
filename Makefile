@@ -26,6 +26,7 @@ CFLAGS += -Wall -Werror -Wextra -fPIC
 
 SRC_PATH = ./srcs/
 SRC_NAME = malloc.c						\
+		   libft_malloc.c
 
 OBJ_PATH = ./obj/
 OBJ_NAME = $(SRC_NAME:.c=.o)
@@ -36,19 +37,12 @@ INC_PATH = ./includes/
 INC = $(addprefix -I,$(INC_PATH))
 INC_FILE = $(INC_PATH)malloc.h
 
-
-LIBFT_PATH = ./libft/
-LIBFT_NAME = libft.a
-LIBFT_INC_PATH = ./libft/includes/
-LIBFT = $(addprefix -L,$(LIBFT_PATH))
-LIBFT_INC = $(addprefix -I,$(LIBFT_INC_PATH))
-
 # ----------------------------------------------------------------------------
 # MISC |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ----------------------------------------------------------------------------
 $(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC_FILE)
 	@mkdir -p $(OBJ_PATH)
-	$(CC) $(CFLAGS) $(LIBFT_INC) $(INC) -o $@ -c $<
+	$(CC) $(CFLAGS) $(INC) -o $@ -c $<
 
 # ----------------------------------------------------------------------------
 # RULES ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -56,21 +50,16 @@ $(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC_FILE)
 all: $(NAME)
 
 test:
-	$(CC) $(CFLAGS) main.c -L. -$(NAME:.so=) $(LIBFT) -lft
+	$(CC) $(CFLAGS) main.c -L. -$(NAME:.so=)
 
-$(NAME): $(LIBFT_PATH)$(LIBFT_NAME) $(OBJ)
-	$(CC) $(CFLAGS) -o $(NAME) -shared $(OBJ) $(LIBFT) -lft
-
-$(LIBFT_PATH)$(LIBFT_NAME):
-	@$(MAKE) -C $(LIBFT_PATH)
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) -o $(NAME) -shared $(OBJ)
 
 clean:
-	@$(MAKE) -C $(LIBFT_PATH) clean
 	@rm -rf $(OBJ)
 	@rm -rf $(OBJ_PATH)
 
 fclean: clean
-	@$(MAKE) -C $(LIBFT_PATH) fclean
 	@rm -rf $(NAME)
 	@rm -rf libft_malloc.so
 
