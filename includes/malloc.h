@@ -13,13 +13,9 @@
 # define PROT		PROT_READ | PROT_WRITE
 # define MAP		MAP_ANON | MAP_PRIVATE
 
-# define MMAP(x)		mmap(0, x, PROT, MAP, -1, 0)
-# define MUNMAP(x, y)	munmap(x, y)
-
 # define BASE16		"0123456789ABCDEF"
 
 # include <unistd.h>
-# include <sys/mman.h>
 # include <pthread.h>
 # include <stdint.h>
 
@@ -43,13 +39,47 @@ t_data				g_data;
 pthread_mutex_t		g_mutex;
 
 /*
-**	libft_malloc.c
+**	malloc.c
 */
+void				*malloc(size_t size);
+
+/*
+**	free.c
+*/
+void				free(void *ptr);
+
+
+/*
+**	realloc.c
+*/
+void				*realloc(void *ptr, size_t size);
+
+/*
+**	lib_print_string.c
+*/
+size_t				ft_strlen(const char *s);
+void				ft_putchar(char c);
 void				ft_putstr(char const *s);
 void				ft_putendl(char const *s);
+
+/*
+**	lib_print_nbr.c
+*/
 void				ft_putnbr_base(uintmax_t n, char *base);
 void				ft_putnbr(int n);
-void				*ft_memcpy(void *dst, const void *src, size_t n);
-void				ft_bzero(void *s, size_t n);
+
+/*
+**	chunk_create.c
+*/
+void				join_next_chunk(t_header *block);
+void				split_chunk(t_header **block, size_t size);
+t_header			*create_chunk(size_t size);
+void				insert_chunk_ascending(t_header **data, t_header *ptr);
+
+/*
+**	chunk_find.c
+*/
+t_header			*find_free_chunk(t_header **lst, size_t size);
+t_header			*find_chunk(void *ptr, int *zone);
 
 #endif

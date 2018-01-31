@@ -25,8 +25,16 @@ CC = clang
 CFLAGS += -Wall -Werror -Wextra -fPIC
 
 SRC_PATH = ./srcs/
-SRC_NAME = malloc.c						\
-		   libft_malloc.c
+SRC_NAME = malloc.c	\
+		   calloc.c	\
+		   realloc.c	\
+		   reallocf.c	\
+		   free.c	\
+		   chunk_create.c	\
+		   chunk_find.c	\
+		   lib_print_nbr.c	\
+		   lib_print_str.c	\
+		   print.c
 
 OBJ_PATH = ./obj/
 OBJ_NAME = $(SRC_NAME:.c=.o)
