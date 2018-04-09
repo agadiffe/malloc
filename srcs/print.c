@@ -23,13 +23,17 @@ size_t		print_chunk(t_header **block, int zone)
 	{
 		zone_size += tmp->size;
 		ft_putstr("0x");
-		ft_putnbr_base((int)tmp->mem, BASE16);
+		ft_putnbr_base((uintmax_t)tmp->mem, BASE16);
 		ft_putstr(" - ");
 		ft_putstr("0x");
-		ft_putnbr_base((int)tmp->mem + tmp->size, BASE16);
+		ft_putnbr_base((uintmax_t)tmp->mem + tmp->size, BASE16);
 		ft_putstr(" : ");
 		ft_putnbr(tmp->size);
-		ft_putendl(" octets");
+		ft_putstr(" octets ");
+		if (tmp->is_free)
+			ft_putendl("FREE");
+		else
+			ft_putendl("USED");
 		tmp = tmp->next;
 	}
 	return (zone_size);

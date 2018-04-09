@@ -23,6 +23,7 @@ void		split_chunk(t_header **block, size_t size)
 	new->next = tmp->next ? tmp->next : NULL;
 	tmp->size = size;
 	tmp->next = new;
+	tmp->is_free = 0;
 }
 
 t_header	*create_chunk(size_t size)

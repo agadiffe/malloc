@@ -15,6 +15,8 @@
 
 # define BASE16		"0123456789ABCDEF"
 
+#define FOR_EXPORT_VOID __attribute__ ((visibility("default"))) void
+
 # include <unistd.h>
 # include <pthread.h>
 # include <stdint.h>

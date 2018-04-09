@@ -1,6 +1,6 @@
 #include "malloc.h"
 
-void	*reallocf(void *ptr, size_t size)
+FOR_EXPORT_VOID	*reallocf(void *ptr, size_t size)
 {
 	void	*new;
 

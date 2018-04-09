@@ -6,7 +6,7 @@
 #    By: agadiffe <agadiffe@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/05/14 20:31:10 by agadiffe          #+#    #+#              #
-#    Updated: 2017/11/02 18:00:55 by agadiffe         ###   ########.fr        #
+#    Updated: 2018/04/09 17:27:21 by agadiffe         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,15 +14,13 @@
 # VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ----------------------------------------------------------------------------
 ifeq ($(HOSTTYPE),)
-	HOSTTYPE :=$(shell uname -m)_$(shell uname -s)
+	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
 endif
 
 NAME = libft_malloc_$(HOSTTYPE).so
 
-$(shell ln -s $(NAME) libft_malloc.so 2> /dev/null)
-
 CC = clang
-CFLAGS += -Wall -Werror -Wextra -fPIC
+CFLAGS += -Wall -Werror -Wextra -fPIC -fvisibility=hidden
 
 SRC_PATH = ./srcs/
 SRC_NAME = malloc.c	\
@@ -56,6 +54,7 @@ $(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC_FILE)
 # RULES ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ----------------------------------------------------------------------------
 all: $(NAME)
+	$(shell ln -s $(NAME) libft_malloc.so 2> /dev/null)
 
 test:
 	$(CC) $(CFLAGS) main.c -L. -$(NAME:.so=)

@@ -18,7 +18,7 @@ static void		ft_bzero(void *s, size_t n)
 	ft_memset(s, '\0', n);
 }
 
-void			*calloc(size_t nmemb, size_t size)
+FOR_EXPORT_VOID 			*calloc(size_t nmemb, size_t size)
 {
 	void	*new;
 
