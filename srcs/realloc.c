@@ -19,7 +19,7 @@ static void		*handle_realloc(void **ptr, size_t size)
 	void		*newptr;
 	t_header	*tmp;
 
-	if (!(tmp = find_chunk(ptr, NULL)))
+	if (!(tmp = find_chunk(*ptr, NULL)))
 		return (NULL);
 	if (tmp->size >= size)
 	{
@@ -27,7 +27,8 @@ static void		*handle_realloc(void **ptr, size_t size)
 			split_chunk(&tmp, size);
 	}
 	else if (tmp->next && tmp->next->is_free
-				&& tmp->size + HEADER_SIZE + tmp->next->size >= size)
+				&& tmp->size + HEADER_SIZE + tmp->next->size >= size
+				&& tmp->mem + tmp->size == tmp->next)
 	{
 		join_next_chunk(tmp);
 		if (tmp->size - size >= HEADER_SIZE + 4)
@@ -43,7 +44,7 @@ static void		*handle_realloc(void **ptr, size_t size)
 	return (*ptr);
 }
 
-FOR_EXPORT_VOID			*realloc(void *ptr, size_t size)
+FOR_EXPORT_VOID		*realloc(void *ptr, size_t size)
 {
 	void	*ret;
 
@@ -59,12 +60,14 @@ FOR_EXPORT_VOID			*realloc(void *ptr, size_t size)
 	else
 	{
 		ft_putstr("REALLOC: ");
-		ft_putnbr((int)ptr);
+		ft_putstr("0x");
+		ft_putnbr_base((uintmax_t)ptr, BASE16);
 		ft_putstr(", ");
 		ft_putnbr((int)size);
 		ft_putstr("\n");
 		if (!(ret = handle_realloc(&ptr, ALIGN4(size))))
 			return (NULL);
+		ft_putstr("REALLOC FREE ?");
 		free(ptr);
 	}
 	return (ret);

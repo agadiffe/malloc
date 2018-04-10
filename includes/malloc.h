@@ -15,7 +15,7 @@
 
 # define BASE16		"0123456789ABCDEF"
 
-#define FOR_EXPORT_VOID __attribute__ ((visibility("default"))) void
+# define FOR_EXPORT_VOID	__attribute__ ((visibility("default"))) void
 
 # include <unistd.h>
 # include <pthread.h>
@@ -83,5 +83,10 @@ void				insert_chunk_ascending(t_header **data, t_header *ptr);
 */
 t_header			*find_free_chunk(t_header **lst, size_t size);
 t_header			*find_chunk(void *ptr, int *zone);
+
+/*
+**	print.c
+*/
+void				show_alloc_mem(void);
 
 #endif

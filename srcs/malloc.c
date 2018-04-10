@@ -26,34 +26,34 @@ static t_header		*handle_malloc(size_t size, size_t zone, t_header **data)
 	}
 
 	ft_putstr("FOUND CHUNK AT\t");
+	ft_putstr("0x");
 	ft_putnbr_base((uintmax_t)ptr->mem, BASE16);
 	ft_putstr("\n");
 
-	if (ptr->size - size >= HEADER_SIZE + 4) {
-
+	if (ptr->size - size >= HEADER_SIZE + 4)
+	{
 		ft_putstr("SPLITTING CHUNK\t");
+		ft_putstr("0x");
 		ft_putnbr_base((uintmax_t)ptr->mem, BASE16);
 		ft_putstr("\t");
-		ft_putnbr_base((uintmax_t)size, BASE16);
+		ft_putnbr(size);
 		ft_putstr("\n");
 
 		split_chunk(&ptr, size);
-	} else {
-		ptr->is_free = 0;
 	}
+	else
+		ptr->is_free = 0;
 	return (ptr->mem);
 }
 
-void		show_alloc_mem(void);
-FOR_EXPORT_VOID				*malloc(size_t size)
+FOR_EXPORT_VOID			*malloc(size_t size)
 {
 	void	*ptr;
 	size_t	align_size;
 
 	ft_putstr("MALLOC:\t");
-	ft_putnbr_base(size, BASE16);
+	ft_putnbr(size);
 	ft_putstr("\n");
-	show_alloc_mem();
 	pthread_mutex_lock(&g_mutex);
 	align_size = ALIGN4(size);
 	if (!size)
@@ -69,8 +69,10 @@ FOR_EXPORT_VOID				*malloc(size_t size)
 		ft_putstr("FAILED TO MAP OMGOMGOMG\n");
 	else {
 		ft_putstr("MALLOC RESULT:\t");
+		ft_putstr("0x");
 		ft_putnbr_base((uintmax_t)ptr, BASE16);
 		ft_putstr("\n");
 	}
+	show_alloc_mem();
 	return (ptr == MAP_FAILED ? NULL : ptr);
 }

@@ -6,7 +6,7 @@
 #    By: agadiffe <agadiffe@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/05/14 20:31:10 by agadiffe          #+#    #+#              #
-#    Updated: 2018/04/09 17:27:21 by agadiffe         ###   ########.fr        #
+#    Updated: 2018/04/10 18:57:49 by agadiffe         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,12 +22,13 @@ NAME = libft_malloc_$(HOSTTYPE).so
 CC = clang
 CFLAGS += -Wall -Werror -Wextra -fPIC -fvisibility=hidden
 
+
 SRC_PATH = ./srcs/
 SRC_NAME = malloc.c	\
 		   calloc.c	\
+		   free.c	\
 		   realloc.c	\
 		   reallocf.c	\
-		   free.c	\
 		   chunk_create.c	\
 		   chunk_find.c	\
 		   lib_print_nbr.c	\

@@ -1,6 +1,6 @@
 #include "malloc.h"
 
-void		print_zone(int zone)
+static void			print_zone(int zone)
 {
 	if (zone == 0)
 		ft_putstr("TINY : ");
@@ -10,15 +10,17 @@ void		print_zone(int zone)
 		ft_putstr("LARGE : ");
 }
 
-size_t		print_chunk(t_header **block, int zone)
+static size_t		print_chunk(t_header **block, int zone)
 {
 	t_header	*tmp;
 	size_t		zone_size;
 
 	zone_size = 0;
 	tmp = *block;
-	ft_putstr("0x");
 	print_zone(zone);
+	ft_putstr("0x");
+	ft_putnbr_base((uintmax_t)tmp, BASE16);
+	ft_putendl("");
 	while (tmp)
 	{
 		zone_size += tmp->size;
@@ -39,7 +41,7 @@ size_t		print_chunk(t_header **block, int zone)
 	return (zone_size);
 }
 
-void		show_alloc_mem(void)
+void				show_alloc_mem(void)
 {
 	t_header	**data[4];
 	t_header	*tmp;
