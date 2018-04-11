@@ -1,6 +1,4 @@
 #include "malloc.h"
-#include <unistd.h>
-#include <stdint.h>
 #include <limits.h>
 
 static void		ft_putnbr_base_inner(uintmax_t n, size_t len_base, char *base)

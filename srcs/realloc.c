@@ -1,6 +1,6 @@
 #include "malloc.h"
 
-static void		*ft_memcpy(void *dst, const void *src, size_t n)
+static void			*ft_memcpy(void *dst, const void *src, size_t n)
 {
 	unsigned char	*s1;
 	unsigned char	*s2;
@@ -14,7 +14,7 @@ static void		*ft_memcpy(void *dst, const void *src, size_t n)
 	return (dst);
 }
 
-static void		*handle_realloc(void **ptr, size_t size)
+static void			*handle_realloc(void **ptr, size_t size)
 {
 	void		*newptr;
 	t_header	*tmp;
@@ -23,21 +23,18 @@ static void		*handle_realloc(void **ptr, size_t size)
 		return (NULL);
 	if (tmp->size >= size)
 	{
-		ft_putendl("split1");
 		if (tmp->size - size >= HEADER_SIZE + 4)
 			split_chunk(tmp, size);
 	}
 	else if (tmp->next && tmp->next->is_free && tmp->size + HEADER_SIZE
 			+ tmp->next->size >= size && tmp->mem + tmp->size == tmp->next)
 	{
-		ft_putendl("split2");
 		join_next_chunk(tmp);
 		if (tmp->size - size >= HEADER_SIZE + 4)
 			split_chunk(tmp, size);
 	}
 	else
 	{
-		ft_putendl("split3");
 		if (!(newptr = malloc(size)))
 			return (NULL);
 		ft_memcpy(newptr, tmp->mem, tmp->size);
@@ -61,15 +58,8 @@ FOR_EXPORT_VOID		*realloc(void *ptr, size_t size)
 	}
 	else
 	{
-		ft_putstr("REALLOC: ");
-		ft_putstr("0x");
-		ft_putnbr_base((uintmax_t)ptr, BASE16);
-		ft_putstr(", ");
-		ft_putnbr((int)size);
-		ft_putstr("\n");
 		if (!(ret = handle_realloc(&ptr, ALIGN4(size))))
 			return (NULL);
-		ft_putstr("REALLOC FREE ?");
 		free(ptr);
 	}
 	return (ret);

@@ -14,9 +14,7 @@ void		split_chunk(t_header *block, size_t size)
 	t_header	*new;
 
 	new = (t_header *)(block->mem + size);
-	ft_putendl("bug");
 	new->mem = (void *)new + HEADER_SIZE;
-	ft_putendl("bug");
 	new->size = block->size - size - HEADER_SIZE;
 	new->is_free = 1;
 	new->prev = block;
@@ -32,13 +30,12 @@ t_header	*create_chunk(size_t size)
 {
 	t_header	*tmp;
 
-	size += HEADER_SIZE;
 	if ((tmp = (t_header *)mmap(0, size, PROT, MAP, -1, 0)) == MAP_FAILED)
 		return (NULL);
 	else
 	{
 		tmp->mem = (void *)tmp + HEADER_SIZE;
-		tmp->size = size;
+		tmp->size = size - HEADER_SIZE;
 		return (tmp);
 	}
 }

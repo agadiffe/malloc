@@ -10,44 +10,42 @@ static void			print_zone(int zone)
 		ft_putstr("LARGE : ");
 }
 
-static size_t		print_chunk(t_header **block, int zone)
+static size_t		print_chunk(t_header *block, int zone)
 {
-	t_header	*tmp;
 	size_t		zone_size;
 
 	zone_size = 0;
-	tmp = *block;
 	print_zone(zone);
 	ft_putstr("0x");
-	ft_putnbr_base((uintmax_t)tmp, BASE16);
+	ft_putnbr_base((uintmax_t)block, BASE16);
 	ft_putendl("");
-	while (tmp)
+	while (block)
 	{
-		zone_size += tmp->size;
-		ft_putstr("0x");
-		ft_putnbr_base((uintmax_t)tmp->mem, BASE16);
-		ft_putstr(" - ");
-		ft_putstr("0x");
-		ft_putnbr_base((uintmax_t)tmp->mem + tmp->size, BASE16);
-		ft_putstr(" : ");
-		ft_putnbr(tmp->size);
-		ft_putstr(" octets ");
-		if (tmp->is_free)
-			ft_putendl("FREE");
-		else
-			ft_putendl("USED");
-		tmp = tmp->next;
+		if (block->is_free == 0)
+		{
+			zone_size += block->size;
+			ft_putstr("0x");
+			ft_putnbr_base((uintmax_t)block->mem, BASE16);
+			ft_putstr(" - ");
+			ft_putstr("0x");
+			ft_putnbr_base((uintmax_t)block->mem + block->size, BASE16);
+			ft_putstr(" : ");
+			ft_putnbr(block->size);
+			ft_putendl(" octets ");
+		}
+		block = block->next;
 	}
 	return (zone_size);
 }
 
-void				show_alloc_mem(void)
+FOR_EXPORT_VOID		show_alloc_mem(void)
 {
 	t_header	**data[4];
 	t_header	*tmp;
 	int			i;
 	size_t		total_size;
 
+	pthread_mutex_lock(&g_mutex);
 	i = 0;
 	total_size = 0;
 	data[0] = &g_data.tiny;
@@ -58,10 +56,11 @@ void				show_alloc_mem(void)
 	{
 		tmp = *data[i];
 		if (tmp)
-			total_size += print_chunk(&tmp, i);
+			total_size += print_chunk(tmp, i);
 		i++;
 	}
 	ft_putstr("Total : ");
 	ft_putnbr(total_size);
 	ft_putendl(" octets");
+	pthread_mutex_unlock(&g_mutex);
 }
