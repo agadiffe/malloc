@@ -6,7 +6,7 @@
 #    By: agadiffe <agadiffe@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/05/14 20:31:10 by agadiffe          #+#    #+#              #
-#    Updated: 2018/04/10 18:57:49 by agadiffe         ###   ########.fr        #
+#    Updated: 2018/04/12 17:42:10 by agadiffe         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,7 +58,7 @@ all: $(NAME)
 	$(shell ln -s $(NAME) libft_malloc.so 2> /dev/null)
 
 test:
-	$(CC) $(CFLAGS) main.c
+	$(CC) $(CFLAGS) test.c $(INC) -L. -lft_malloc
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) -shared $(OBJ)

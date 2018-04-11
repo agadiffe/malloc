@@ -3,23 +3,25 @@
 
 static void			handle_munmap(t_header *block, t_header **data, int zone)
 {
-	if (block->prev)
-	{
-		block->prev->next = block->next;
-		if (block->next)
-			block->next->prev = block->prev;
-	}
-	else
-	{
-		*data = block->next;
-		if (block->next)
-			block->next->prev = NULL;
-	}
 	if ((zone == 1 && block->size == SMALL_ZONE - HEADER_SIZE
 				&& (block->prev || block->next))
 			|| (zone == 0 && block->size == TINY_ZONE - HEADER_SIZE
 				&& (block->prev || block->next)))
+	{
+		if (block->prev)
+		{
+			block->prev->next = block->next;
+			if (block->next)
+				block->next->prev = block->prev;
+		}
+		else
+		{
+			*data = block->next;
+			if (block->next)
+				block->next->prev = NULL;
+		}
 		munmap(block, block->size + HEADER_SIZE);
+	}
 }
 
 static void			handle_free(t_header *block, int zone)
@@ -43,7 +45,7 @@ FOR_EXPORT_VOID		free(void *ptr)
 	if (!ptr)
 		return ;
 	pthread_mutex_lock(&g_mutex);
-	zone = 0;
+	zone = -1;
 	if ((tmp = find_chunk(ptr, &zone)))
 	{
 		tmp->is_free = 1;
@@ -56,8 +58,7 @@ FOR_EXPORT_VOID		free(void *ptr)
 			join_next_chunk(tmp->prev);
 			tmp = tmp->prev;
 		}
-		if (zone)
-			handle_free(tmp, zone);
+		handle_free(tmp, zone);
 	}
 	pthread_mutex_unlock(&g_mutex);
 }
