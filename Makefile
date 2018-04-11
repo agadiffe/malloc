@@ -58,7 +58,7 @@ all: $(NAME)
 	$(shell ln -s $(NAME) libft_malloc.so 2> /dev/null)
 
 test:
-	$(CC) $(CFLAGS) main.c -L. -$(NAME:.so=)
+	$(CC) $(CFLAGS) main.c
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) -shared $(OBJ)

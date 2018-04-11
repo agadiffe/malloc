@@ -23,11 +23,11 @@
 
 typedef struct		s_header
 {
-	void			*mem;
 	size_t			size;
-	int				is_free;
 	struct s_header	*prev;
 	struct s_header	*next;
+	int				is_free;
+	void			*mem;
 }					t_header;
 
 typedef struct		s_data

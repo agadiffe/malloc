@@ -15,8 +15,8 @@ void		split_chunk(t_header **block, size_t size)
 	t_header	*new;
 
 	tmp = *block;
-	new = tmp->mem + size;
-	new->mem = new + HEADER_SIZE;
+	new = (t_header *)(tmp->mem + size);
+	new->mem = (void *)new + HEADER_SIZE;
 	new->size = tmp->size - size - HEADER_SIZE;
 	new->is_free = 1;
 	new->prev = tmp;
@@ -36,7 +36,7 @@ t_header	*create_chunk(size_t size)
 		return (NULL);
 	else
 	{
-		tmp->mem = tmp + HEADER_SIZE;
+		tmp->mem = (void *)tmp + HEADER_SIZE;
 		tmp->size = size - HEADER_SIZE;
 		return (tmp);
 	}

@@ -5,7 +5,7 @@ static t_header		*handle_malloc(size_t size, size_t zone, t_header **data)
 {
 	t_header	*ptr;
 
-	if (!(ptr = find_free_chunk(data, size + HEADER_SIZE)))
+	if (!(ptr = find_free_chunk(data, size)))
 	{
 		ft_putstr("CREATING CHUNK");
 		ft_putstr("\n");
@@ -26,6 +26,9 @@ static t_header		*handle_malloc(size_t size, size_t zone, t_header **data)
 	}
 
 	ft_putstr("FOUND CHUNK AT\t");
+	ft_putstr("0x");
+	ft_putnbr_base((uintmax_t)ptr, BASE16);
+	ft_putstr("\n");
 	ft_putstr("0x");
 	ft_putnbr_base((uintmax_t)ptr->mem, BASE16);
 	ft_putstr("\n");

@@ -45,7 +45,8 @@ FOR_EXPORT_VOID		free(void *ptr)
 	int			zone;
 
 	ft_putstr("FREE:\t");
-	ft_putstr("0x");
+	ft_putnbr(HEADER_SIZE);
+	ft_putstr(" 0x");
 	ft_putnbr_base((uintmax_t)ptr, BASE16);
 	ft_putstr("\n");
 	if (!ptr)
@@ -56,17 +57,23 @@ FOR_EXPORT_VOID		free(void *ptr)
 	{
 		tmp->is_free = 1;
 		// TODO: Verifie qu'ils sont contigu
-		ft_putstr("tmp->mem + size: 0x");
-		ft_putnbr_base((uintmax_t)(tmp->mem + tmp->size), BASE16);
-		ft_putstr("\n");
 		ft_putstr("tmp->next:  0x");
 		ft_putnbr_base((uintmax_t)tmp->next, BASE16);
+		ft_putstr("\n");
+		ft_putstr("tmp->next + HS:  0x");
+		ft_putnbr_base((uintmax_t)tmp->next + HEADER_SIZE, BASE16);
 		ft_putstr("\n");
 		if (tmp->next && tmp->next->is_free
 				&& tmp->mem + tmp->size == tmp->next)
 		{
 			ft_putendl("JOIN NEXT");
 			join_next_chunk(tmp);
+		}
+		if (tmp->prev)
+		{
+			ft_putstr("tmp:  0x");
+			ft_putnbr_base((uintmax_t)tmp, BASE16);
+			ft_putstr("\n");
 		}
 		if (tmp->prev && tmp->prev->is_free
 				&& tmp->prev->mem + tmp->prev->size == tmp)
