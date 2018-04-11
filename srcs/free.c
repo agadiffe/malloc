@@ -2,43 +2,46 @@
 #include <sys/mman.h>
 #include <stddef.h>
 
-static void			handle_munmap(t_header *block, t_header **data)
+static void			handle_munmap(t_header *block, t_header **data, int zone)
 {
+	ft_putendl("munmap");
 	if (block->prev)
 	{
+		ft_putendl("block prev");
 		block->prev->next = block->next;
-		block->next->prev = block->prev;
+		if (block->next)
+			block->next->prev = block->prev;
+		ft_putendl("end?");
 	}
 	else
 	{
+		ft_putendl("only 1 block");
 		*data = block->next;
-		block->next->prev = NULL;
+		if (block->next)
+			block->next->prev = NULL;
+		ft_putendl("end?");
 	}
-	munmap(block->mem - HEADER_SIZE, block->size + HEADER_SIZE);
+	//TODO: check if free space in block->prev or block->next
+	if ((zone == 1 && block->size == SMALL_ZONE - HEADER_SIZE
+				&& (block->prev || block->next))
+			|| (zone == 0 && block->size == TINY_ZONE - HEADER_SIZE
+				&& (block->prev || block->next)))
+		munmap(block, block->size + HEADER_SIZE);
 }
 
 static void			handle_free(t_header *block, int zone)
 {
-	return;
 	if (zone == 2)
 	{
-		munmap(block->mem - HEADER_SIZE, block->size + HEADER_SIZE);
+		munmap(block, block->size + HEADER_SIZE);
 		g_data.large = NULL;
 	}
-	// TODO: 2 * SMALL_ZONE is impossible
-	else if (zone == 1 && block->size > 2 * SMALL_ZONE)
-		handle_munmap(block, &g_data.small);
-	else if (block->size > 2 * TINY_ZONE)
-		handle_munmap(block, &g_data.tiny);
+	else if (zone == 1)
+		handle_munmap(block, &g_data.small, 1);
+	else
+		handle_munmap(block, &g_data.tiny, 0);
 }
-//18470
-//static void		join_next_chunk(t_header *block)
-//{
-//	block->size += HEADER_SIZE + block->next->size;
-//	block->next = block->next->next;
-//	if (block->next)
-//		block->next->prev = block;
-//}
+
 FOR_EXPORT_VOID		free(void *ptr)
 {
 	t_header	*tmp;
@@ -56,7 +59,6 @@ FOR_EXPORT_VOID		free(void *ptr)
 	if ((tmp = find_chunk(ptr, &zone)))
 	{
 		tmp->is_free = 1;
-		// TODO: Verifie qu'ils sont contigu
 		ft_putstr("tmp->next:  0x");
 		ft_putnbr_base((uintmax_t)tmp->next, BASE16);
 		ft_putstr("\n");

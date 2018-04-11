@@ -74,7 +74,7 @@ void				ft_putnbr(int n);
 **	chunk_create.c
 */
 void				join_next_chunk(t_header *block);
-void				split_chunk(t_header **block, size_t size);
+void				split_chunk(t_header *block, size_t size);
 t_header			*create_chunk(size_t size);
 void				insert_chunk_ascending(t_header **data, t_header *ptr);
 

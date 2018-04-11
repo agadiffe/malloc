@@ -28,14 +28,9 @@ t_header		*find_chunk(void *ptr, int *zone)
 		tmp = *data[i];
 		while (tmp)
 		{
-			//ft_putendl("FIND 1");
-			//ft_putstr("FOUND CHUNCK:\t");
-			//ft_putnbr_base((uintmax_t)tmp->mem, BASE16);
-			//ft_putstr("\n");
 			if (tmp->mem == ptr)
 				return (tmp);
 			tmp = tmp->next;
-			//ft_putendl("FIND 2");
 		}
 		i++;
 	}

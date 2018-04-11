@@ -33,7 +33,14 @@ static t_header		*handle_malloc(size_t size, size_t zone, t_header **data)
 	ft_putnbr_base((uintmax_t)ptr->mem, BASE16);
 	ft_putstr("\n");
 
-	if (ptr->size - size >= HEADER_SIZE + 4)
+	ft_putstr("CHECK IF SPLIT\t");
+	ft_putnbr(ptr->size - size);
+	ft_putstr("\t");
+	ft_putnbr(ptr->size);
+	ft_putstr("\t");
+	ft_putnbr(HEADER_SIZE + 4);
+	ft_putstr("\n");
+	if ((intmax_t)(ptr->size - size) >= (intmax_t)(HEADER_SIZE + 4))
 	{
 		ft_putstr("SPLITTING CHUNK\t");
 		ft_putstr("0x");
@@ -42,7 +49,7 @@ static t_header		*handle_malloc(size_t size, size_t zone, t_header **data)
 		ft_putnbr(size);
 		ft_putstr("\n");
 
-		split_chunk(&ptr, size);
+		split_chunk(ptr, size);
 	}
 	else
 		ptr->is_free = 0;
