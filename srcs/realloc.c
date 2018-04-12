@@ -48,6 +48,7 @@ FOR_EXPORT_VOID		*realloc(void *ptr, size_t size)
 	void	*ret;
 
 	ret = NULL;
+	pthread_mutex_lock(&g_mutex);
 	if (!ptr)
 		return (malloc(size));
 	if (!size && ptr)
@@ -62,5 +63,6 @@ FOR_EXPORT_VOID		*realloc(void *ptr, size_t size)
 			return (NULL);
 		free(ptr);
 	}
+	pthread_mutex_unlock(&g_mutex);
 	return (ret);
 }
