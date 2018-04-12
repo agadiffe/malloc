@@ -33,6 +33,7 @@ FOR_EXPORT_VOID		*malloc(size_t size)
 	void	*ptr;
 	size_t	asize;
 
+	g_mutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_lock(&g_mutex);
 	asize = ALIGN4(size);
 	if (!size)

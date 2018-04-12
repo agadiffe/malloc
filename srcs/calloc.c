@@ -22,6 +22,7 @@ FOR_EXPORT_VOID		*calloc(size_t nmemb, size_t size)
 {
 	void	*new;
 
+	g_mutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_lock(&g_mutex);
 	if (nmemb && size && (new = malloc(nmemb * size)))
 	{
