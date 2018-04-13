@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   realloc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: agadiffe <agadiffe@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/04/13 17:29:21 by agadiffe          #+#    #+#             */
+/*   Updated: 2018/04/13 17:29:25 by agadiffe         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "malloc.h"
 
 static void			*ft_memcpy(void *dst, const void *src, size_t n)
@@ -48,7 +60,7 @@ FOR_EXPORT_VOID		*realloc(void *ptr, size_t size)
 	void	*ret;
 
 	ret = NULL;
-	pthread_mutex_init(&g_mutex, NULL);;
+	pthread_mutex_init(&g_mutex, NULL);
 	pthread_mutex_lock(&g_mutex);
 	if (!ptr)
 		return (malloc(size));

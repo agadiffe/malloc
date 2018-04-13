@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   malloc.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: agadiffe <agadiffe@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/04/13 17:29:05 by agadiffe          #+#    #+#             */
+/*   Updated: 2018/04/13 17:29:12 by agadiffe         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "malloc.h"
 #include <sys/mman.h>
 
@@ -33,7 +45,7 @@ FOR_EXPORT_VOID		*malloc(size_t size)
 	void	*ptr;
 	size_t	asize;
 
-	pthread_mutex_init(&g_mutex, NULL);;
+	pthread_mutex_init(&g_mutex, NULL);
 	pthread_mutex_lock(&g_mutex);
 	asize = ALIGN4(size);
 	if (!size)

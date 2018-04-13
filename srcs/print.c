@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: agadiffe <agadiffe@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/04/13 17:29:14 by agadiffe          #+#    #+#             */
+/*   Updated: 2018/04/13 17:29:20 by agadiffe         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "malloc.h"
 
 static void			print_zone(int zone)
@@ -45,7 +57,7 @@ FOR_EXPORT_VOID		show_alloc_mem(void)
 	int			i;
 	size_t		total_size;
 
-	pthread_mutex_init(&g_mutex, NULL);;
+	pthread_mutex_init(&g_mutex, NULL);
 	pthread_mutex_lock(&g_mutex);
 	i = 0;
 	total_size = 0;

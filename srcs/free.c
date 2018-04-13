@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: agadiffe <agadiffe@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/04/13 17:28:47 by agadiffe          #+#    #+#             */
+/*   Updated: 2018/04/13 17:28:55 by agadiffe         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "malloc.h"
 #include <sys/mman.h>
 
@@ -44,7 +56,7 @@ FOR_EXPORT_VOID		free(void *ptr)
 
 	if (!ptr)
 		return ;
-	pthread_mutex_init(&g_mutex, NULL);;
+	pthread_mutex_init(&g_mutex, NULL);
 	pthread_mutex_lock(&g_mutex);
 	zone = -1;
 	if ((tmp = find_chunk(ptr, &zone)))
