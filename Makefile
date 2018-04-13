@@ -33,6 +33,7 @@ SRC_NAME = malloc.c	\
 		   chunk_find.c	\
 		   lib_print_nbr.c	\
 		   lib_print_str.c	\
+		   ft_memlock.c	\
 		   print.c
 
 OBJ_PATH = ./obj/

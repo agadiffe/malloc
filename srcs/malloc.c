@@ -44,9 +44,10 @@ FOR_EXPORT_VOID		*malloc(size_t size)
 {
 	void	*ptr;
 	size_t	asize;
+	pthread_mutex_t		*lock;
 
-	pthread_mutex_init(&g_mutex, NULL);
-	pthread_mutex_lock(&g_mutex);
+	lock = ft_memlock();
+	pthread_mutex_lock(lock);
 	asize = ALIGN4(size);
 	if (!size)
 		return (NULL);
@@ -56,7 +57,6 @@ FOR_EXPORT_VOID		*malloc(size_t size)
 		ptr = handle_malloc(asize, SMALL_ZONE, &g_data.small);
 	else
 		ptr = handle_malloc(asize, asize + HEADER_SIZE, &g_data.large);
-	pthread_mutex_unlock(&g_mutex);
-	pthread_mutex_destroy(&g_mutex);
+	pthread_mutex_unlock(lock);
 	return (ptr == MAP_FAILED ? NULL : ptr);
 }

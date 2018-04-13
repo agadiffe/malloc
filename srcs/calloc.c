@@ -32,16 +32,16 @@ static void			ft_bzero(void *s, size_t n)
 
 FOR_EXPORT_VOID		*calloc(size_t nmemb, size_t size)
 {
-	void	*new;
+	void				*new;
+	pthread_mutex_t		*lock;
 
-	pthread_mutex_init(&g_mutex, NULL);
-	pthread_mutex_lock(&g_mutex);
+	lock = ft_memlock();
+	pthread_mutex_lock(lock);
 	if (nmemb && size && (new = malloc(nmemb * size)))
 	{
 		ft_bzero(new, ALIGN4(nmemb * size));
 		return (new);
 	}
-	pthread_mutex_unlock(&g_mutex);
-	pthread_mutex_destroy(&g_mutex);
+	pthread_mutex_unlock(lock);
 	return (NULL);
 }

@@ -50,7 +50,6 @@ typedef struct		s_data
 }					t_data;
 
 t_data				g_data;
-pthread_mutex_t		g_mutex;
 
 /*
 **	malloc.c
@@ -99,5 +98,10 @@ t_header			*find_chunk(void *ptr, int *zone);
 **	print.c
 */
 void				show_alloc_mem(void);
+
+/*
+**	ft_memlock.c
+*/
+pthread_mutex_t		*ft_memlock(void);
 
 #endif

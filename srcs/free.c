@@ -51,13 +51,14 @@ static void			handle_free(t_header *block, int zone)
 
 FOR_EXPORT_VOID		free(void *ptr)
 {
-	t_header	*tmp;
-	int			zone;
+	t_header			*tmp;
+	int					zone;
+	pthread_mutex_t		*lock;
 
 	if (!ptr)
 		return ;
-	pthread_mutex_init(&g_mutex, NULL);
-	pthread_mutex_lock(&g_mutex);
+	lock = ft_memlock();
+	pthread_mutex_lock(lock);
 	zone = -1;
 	if ((tmp = find_chunk(ptr, &zone)))
 	{
@@ -73,6 +74,5 @@ FOR_EXPORT_VOID		free(void *ptr)
 		}
 		handle_free(tmp, zone);
 	}
-	pthread_mutex_unlock(&g_mutex);
-	pthread_mutex_destroy(&g_mutex);
+	pthread_mutex_unlock(lock);
 }

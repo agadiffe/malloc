@@ -52,13 +52,14 @@ static size_t		print_chunk(t_header *block, int zone)
 
 FOR_EXPORT_VOID		show_alloc_mem(void)
 {
-	t_header	**data[4];
-	t_header	*tmp;
-	int			i;
-	size_t		total_size;
+	t_header			**data[4];
+	t_header			*tmp;
+	int					i;
+	size_t				total_size;
+	pthread_mutex_t		*lock;
 
-	pthread_mutex_init(&g_mutex, NULL);
-	pthread_mutex_lock(&g_mutex);
+	lock = ft_memlock();
+	pthread_mutex_lock(lock);
 	i = 0;
 	total_size = 0;
 	data[0] = &g_data.tiny;
@@ -75,6 +76,5 @@ FOR_EXPORT_VOID		show_alloc_mem(void)
 	ft_putstr("Total : ");
 	ft_putnbr(total_size);
 	ft_putendl(" octets");
-	pthread_mutex_unlock(&g_mutex);
-	pthread_mutex_destroy(&g_mutex);
+	pthread_mutex_unlock(lock);
 }

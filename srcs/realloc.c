@@ -26,11 +26,28 @@ static void			*ft_memcpy(void *dst, const void *src, size_t n)
 	return (dst);
 }
 
+static void			*fresh_malloc(t_header *tmp, size_t size)
+{
+	void				*newptr;
+	pthread_mutex_t		*lock;
+
+	lock = ft_memlock();
+	pthread_mutex_unlock(lock);
+	if (!(newptr = malloc(size)))
+		return (NULL);
+	pthread_mutex_lock(lock);
+	ft_memcpy(newptr, tmp->mem, tmp->size);
+	pthread_mutex_unlock(lock);
+	return (newptr);
+}
+
 static void			*handle_realloc(void **ptr, size_t size)
 {
-	void		*newptr;
-	t_header	*tmp;
+	t_header			*tmp;
+	pthread_mutex_t		*lock;
 
+	lock = ft_memlock();
+	pthread_mutex_lock(lock);
 	if (!(tmp = find_chunk(*ptr, NULL)))
 		return (NULL);
 	if (tmp->size >= size)
@@ -46,22 +63,15 @@ static void			*handle_realloc(void **ptr, size_t size)
 			split_chunk(tmp, size);
 	}
 	else
-	{
-		if (!(newptr = malloc(size)))
-			return (NULL);
-		ft_memcpy(newptr, tmp->mem, tmp->size);
-		return (newptr);
-	}
+		return (fresh_malloc(tmp, size));
+	pthread_mutex_unlock(lock);
 	return (*ptr);
 }
 
 FOR_EXPORT_VOID		*realloc(void *ptr, size_t size)
 {
 	void	*ret;
-
 	ret = NULL;
-	pthread_mutex_init(&g_mutex, NULL);
-	pthread_mutex_lock(&g_mutex);
 	if (!ptr)
 		return (malloc(size));
 	if (!size && ptr)
@@ -76,7 +86,5 @@ FOR_EXPORT_VOID		*realloc(void *ptr, size_t size)
 			return (NULL);
 		free(ptr);
 	}
-	pthread_mutex_unlock(&g_mutex);
-	pthread_mutex_destroy(&g_mutex);
 	return (ret);
 }
