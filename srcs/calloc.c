@@ -22,7 +22,7 @@ FOR_EXPORT_VOID		*calloc(size_t nmemb, size_t size)
 {
 	void	*new;
 
-	g_mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&g_mutex, NULL);;
 	pthread_mutex_lock(&g_mutex);
 	if (nmemb && size && (new = malloc(nmemb * size)))
 	{
@@ -30,5 +30,6 @@ FOR_EXPORT_VOID		*calloc(size_t nmemb, size_t size)
 		return (new);
 	}
 	pthread_mutex_unlock(&g_mutex);
+	pthread_mutex_destroy(&g_mutex);
 	return (NULL);
 }

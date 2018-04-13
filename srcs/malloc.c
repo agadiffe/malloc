@@ -33,7 +33,7 @@ FOR_EXPORT_VOID		*malloc(size_t size)
 	void	*ptr;
 	size_t	asize;
 
-	g_mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&g_mutex, NULL);;
 	pthread_mutex_lock(&g_mutex);
 	asize = ALIGN4(size);
 	if (!size)
@@ -45,5 +45,6 @@ FOR_EXPORT_VOID		*malloc(size_t size)
 	else
 		ptr = handle_malloc(asize, asize + HEADER_SIZE, &g_data.large);
 	pthread_mutex_unlock(&g_mutex);
+	pthread_mutex_destroy(&g_mutex);
 	return (ptr == MAP_FAILED ? NULL : ptr);
 }

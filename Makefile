@@ -6,7 +6,7 @@
 #    By: agadiffe <agadiffe@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/05/14 20:31:10 by agadiffe          #+#    #+#              #
-#    Updated: 2018/04/12 17:42:10 by agadiffe         ###   ########.fr        #
+#    Updated: 2018/04/13 16:16:23 by agadiffe         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,13 +55,13 @@ $(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC_FILE)
 # RULES ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # ----------------------------------------------------------------------------
 all: $(NAME)
-	$(shell ln -s $(NAME) libft_malloc.so 2> /dev/null)
 
 test:
 	$(CC) $(CFLAGS) test.c $(INC) -L. -lft_malloc
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) -o $(NAME) -shared $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^ -shared -lpthread
+	@$(shell ln -s $@ libft_malloc.so)
 
 clean:
 	@rm -rf $(OBJ)

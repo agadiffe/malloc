@@ -45,7 +45,7 @@ FOR_EXPORT_VOID		show_alloc_mem(void)
 	int			i;
 	size_t		total_size;
 
-	g_mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&g_mutex, NULL);;
 	pthread_mutex_lock(&g_mutex);
 	i = 0;
 	total_size = 0;
@@ -64,4 +64,5 @@ FOR_EXPORT_VOID		show_alloc_mem(void)
 	ft_putnbr(total_size);
 	ft_putendl(" octets");
 	pthread_mutex_unlock(&g_mutex);
+	pthread_mutex_destroy(&g_mutex);
 }

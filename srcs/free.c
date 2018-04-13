@@ -44,7 +44,7 @@ FOR_EXPORT_VOID		free(void *ptr)
 
 	if (!ptr)
 		return ;
-	g_mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&g_mutex, NULL);;
 	pthread_mutex_lock(&g_mutex);
 	zone = -1;
 	if ((tmp = find_chunk(ptr, &zone)))
@@ -62,4 +62,5 @@ FOR_EXPORT_VOID		free(void *ptr)
 		handle_free(tmp, zone);
 	}
 	pthread_mutex_unlock(&g_mutex);
+	pthread_mutex_destroy(&g_mutex);
 }
